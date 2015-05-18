@@ -5,30 +5,95 @@ import (
 	"fmt"
 	"github.com/AdRoll/goamz/aws"
 	"net/http"
+	"net/url"
+	"strings"
 )
+
+type Error struct {
+	StatusCode int
+	Code       string
+	Message    string
+	RequestId  string
+}
+
+func (err *Error) Error() string {
+	return err.Message
+}
+
+type ErrorResponse struct {
+	RequestId string
+	Errors    []Error `xml:"Error"`
+}
 
 type SNS struct {
 	aws.Auth
 	aws.Region
-	service aws.Service
+	Signer  *aws.V4Signer
+	private byte // Reserve the right of using private data.
 }
 
 func New(auth aws.Auth, region aws.Region) (*SNS, error) {
-	serviceInfo := aws.ServiceInfo{region.SNSEndpoint, aws.V2Signature}
-	service, err := aws.NewService(auth, serviceInfo)
-
-	return &SNS{auth, region, *service}, err
+	signer := aws.NewV4Signer(auth, "sns", region)
+	return &SNS{auth, region, signer, 0}, nil
 }
 
-func (sns *SNS) query(method string, params map[string]string, responseType interface{}) error {
-	response, err := sns.service.Query(method, "/", params)
+func (sns *SNS) query(method string, params map[string]string, resp interface{}) error {
+	u, err := url.Parse(sns.Region.SNSEndpoint)
 	if err != nil {
 		return err
-	} else if response.StatusCode != http.StatusOK {
-		return sns.service.BuildError(response)
-	} else {
-		return xml.NewDecoder(response.Body).Decode(responseType)
 	}
+
+	var req *http.Request
+	if method == "GET" {
+		u.RawQuery = multimap(params).Encode()
+		req, err = http.NewRequest(method, u.String(), nil)
+		if err != nil {
+			return err
+		}
+	} else if method == "POST" {
+		req, err = http.NewRequest(method, u.String(), strings.NewReader(multimap(params).Encode()))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	}
+
+	sns.Signer.Sign(req)
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return buildError(res)
+	}
+	err = xml.NewDecoder(res.Body).Decode(resp)
+	return err
+}
+
+func buildError(r *http.Response) error {
+	errors := ErrorResponse{}
+	xml.NewDecoder(r.Body).Decode(&errors)
+	var err Error
+	if len(errors.Errors) > 0 {
+		err = errors.Errors[0]
+	}
+	err.RequestId = errors.RequestId
+	err.StatusCode = r.StatusCode
+	if err.Message == "" {
+		err.Message = r.Status
+	}
+	return &err
+}
+
+func multimap(p map[string]string) url.Values {
+	q := make(url.Values, len(p))
+	for k, v := range p {
+		q[k] = []string{v}
+	}
+	return q
 }
 
 // Returns a list of the requester's topics. Each call returns a limited list of topics, up to 100.
