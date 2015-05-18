@@ -1,9 +1,9 @@
 package cloudwatch_test
 
 import (
-	"github.com/AdRoll/goamz/aws"
-	"github.com/AdRoll/goamz/cloudwatch"
-	"github.com/AdRoll/goamz/testutil"
+	"github.com/majorleaguesoccer/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/cloudwatch"
+	"github.com/majorleaguesoccer/goamz/testutil"
 	"gopkg.in/check.v1"
 	"testing"
 )

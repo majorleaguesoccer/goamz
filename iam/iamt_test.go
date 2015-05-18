@@ -1,9 +1,9 @@
 package iam_test
 
 import (
-	"github.com/AdRoll/goamz/aws"
-	"github.com/AdRoll/goamz/iam"
-	"github.com/AdRoll/goamz/iam/iamtest"
+	"github.com/majorleaguesoccer/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/iam"
+	"github.com/majorleaguesoccer/goamz/iam/iamtest"
 	"gopkg.in/check.v1"
 )
 

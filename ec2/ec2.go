@@ -15,7 +15,7 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"github.com/AdRoll/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/aws"
 	"log"
 	"net/http"
 	"net/http/httputil"

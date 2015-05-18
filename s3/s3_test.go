@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AdRoll/goamz/aws"
-	"github.com/AdRoll/goamz/s3"
-	"github.com/AdRoll/goamz/testutil"
+	"github.com/majorleaguesoccer/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/s3"
+	"github.com/majorleaguesoccer/goamz/testutil"
 	"gopkg.in/check.v1"
 )
 

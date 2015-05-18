@@ -1,8 +1,8 @@
 package elb_test
 
 import (
-	"github.com/AdRoll/goamz/aws"
-	"github.com/AdRoll/goamz/elb"
+	"github.com/majorleaguesoccer/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/elb"
 	"gopkg.in/check.v1"
 	"time"
 )

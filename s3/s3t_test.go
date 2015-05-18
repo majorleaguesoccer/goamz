@@ -1,9 +1,9 @@
 package s3_test
 
 import (
-	"github.com/AdRoll/goamz/aws"
-	"github.com/AdRoll/goamz/s3"
-	"github.com/AdRoll/goamz/s3/s3test"
+	"github.com/majorleaguesoccer/goamz/aws"
+	"github.com/majorleaguesoccer/goamz/s3"
+	"github.com/majorleaguesoccer/goamz/s3/s3test"
 	"gopkg.in/check.v1"
 )
 
